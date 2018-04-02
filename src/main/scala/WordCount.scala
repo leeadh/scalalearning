@@ -1,22 +1,27 @@
-import org.apache.log4j
-import org.apache.log4j.Logger
-import org.apache.spark.SparkConf
+//import org.apache.log4j.Level
+//import org.apache.log4j.Logger
 import org.apache.spark._
+
 
 object WordCount {
 
   def main(args: Array[String]) {
 
-    Logger.getLogger("org").setLevel(Level.ERROR)
-    val conf = new SparkConf().setAppName("wordCounts").setMaster("local[3]")
+    val conf = new SparkConf()
+      .setAppName("Simple Application")
+      .setMaster("local")
+
     val sc = new SparkContext(conf)
 
-    val lines = sc.textFile("in/word_count.text")
+    val lines = sc.textFile("src/main/resources/word_count.text").cache()
 
-    val words = lines.flatMap(line => line.split(" "))
+    val wordCounts = lines.flatMap(line => line.split(" "))
+      .map(word => (word, 1))
+      .reduceByKey((a, b) => a + b)
 
-    val wordCounts = words.countByValue()
     for ((word, count) <- wordCounts)
       println(word + " : " + count)
+
+    sc.stop()
   }
 }

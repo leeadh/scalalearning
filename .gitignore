@@ -1,0 +1,4 @@
+# don't copy all those big
+# jar files to git :)
+target
+*.jar
